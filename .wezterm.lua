@@ -193,7 +193,7 @@ local function file_exists(name)
 end
 
 -- Default leader key value (e.g., backslash)
-local vim_leader_key = "\\"
+local vim_leader_key = " "
 
 -- Define the path to your custom leader key config file.
 -- For example, if you have ~/.wezterm.d/vim_leader_key.lua:
