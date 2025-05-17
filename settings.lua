@@ -1,6 +1,7 @@
 local wezterm = require 'wezterm'
 
 return {
+
     -- Gaps
     window_padding = {
         left = 0,
@@ -36,12 +37,4 @@ return {
 
     -- Scroll bar
     enable_scroll_bar = false,
-
-    -- -- Local server for persistent sessions (example, keep commented if not used)
-    -- unix_domains = {
-    --     {
-    --         name = "jakeroid",
-    --     },
-    -- },
-    -- default_gui_startup_args = { "connect", "jakeroid" },
 }

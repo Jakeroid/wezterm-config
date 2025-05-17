@@ -2,6 +2,7 @@ local wezterm = require 'wezterm'
 local w_act = wezterm.action -- Alias for wezterm.action
 
 return {
+
     -- Make CMD+C and CMD+V work in Vim by using Vim bindings
     {
         key = "c",
