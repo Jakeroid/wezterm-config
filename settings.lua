@@ -1,6 +1,8 @@
 local wezterm = require 'wezterm'
+local utils = require 'utils' -- Added to use utils.file_exists
 
-return {
+-- Base configuration
+local config = {
 
     -- Gaps
     window_padding = {
@@ -38,3 +40,65 @@ return {
     -- Scroll bar
     enable_scroll_bar = false,
 }
+
+-- Helper function to check if a table is a list (array-like)
+local function is_list(t)
+    if type(t) ~= "table" or getmetatable(t) ~= nil then
+        return false
+    end
+    local i = 0
+    for _ in pairs(t) do
+        i = i + 1
+        if t[i] == nil then return false end -- Not a sequence 1..n
+    end
+    return true -- True if all keys are 1..n or if empty
+end
+
+-- Function to deeply merge two configuration tables
+-- It merges 'override' into 'base'.
+-- Map-like tables are merged recursively. List-like tables (arrays) are replaced.
+local function merge_configs(base, override)
+    local new_config = {}
+    for k, v in pairs(base) do
+        new_config[k] = v
+    end
+
+    for key, val_override in pairs(override) do
+        local val_base = base[key]
+        if type(val_base) == "table" and type(val_override) == "table" and
+           getmetatable(val_base) == nil and getmetatable(val_override) == nil and
+           not is_list(val_base) and not is_list(val_override) then
+            -- Deep merge for map-like tables
+            new_config[key] = merge_configs(val_base, val_override)
+        else
+            -- Replace for lists, non-tables, or objects with metatables
+            new_config[key] = val_override
+        end
+    end
+    return new_config
+end
+
+-- Define the path to your local override file
+local local_settings_path = wezterm.config_dir .. "/local_settings.lua"
+
+-- Check if the local override file exists and load it
+if utils.file_exists(local_settings_path) then
+    -- Use pcall to safely load and execute the local settings file
+    local ok, local_overrides_or_error = pcall(dofile, local_settings_path)
+
+    if ok then
+        if type(local_overrides_or_error) == "table" then
+            config = merge_configs(config, local_overrides_or_error)
+            wezterm.log_info("Successfully loaded and merged local overrides from: " .. local_settings_path)
+        else
+            wezterm.log_error("local_settings.lua (" .. local_settings_path .. ") did not return a table.")
+        end
+    else
+        -- local_overrides_or_error contains the error message here
+        wezterm.log_error("Error loading/executing local_settings.lua: " .. tostring(local_overrides_or_error))
+    end
+else
+    wezterm.log_info("No local_settings.lua found at: " .. local_settings_path .. ". Using default settings.")
+end
+
+return config

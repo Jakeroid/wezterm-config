@@ -1,14 +1,6 @@
-local M = {}
-
--- Helper function to check if a file exists
-function M.file_exists(name)
-    local f = io.open(name, "r")
-    if f then
-        f:close()
-        return true
-    else
-        return false
-    end
-end
-
-return M
+-- ~/.config/wezterm/local_settings.lua
+-- This is an example, do not add this to git.
+return {
+    font_size = 18, -- Overrides the font_size from settings.lua
+    color_scheme = 'Noctis Lux', -- Overrides the color_scheme
+}
