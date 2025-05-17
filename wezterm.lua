@@ -8,33 +8,25 @@ local config = wezterm.config_builder()
 -- This is where you actually apply your config choices
 --
 
--- Make easily access to wezterm.action
-w_act = wezterm.action
-
 -- Make easily access to wezterm.mux
 local w_mux = wezterm.mux
 
--- Gaps
-config.window_padding = {
-    left = 0,
-    right = 0,
-    top = 0,
-    bottom = 0,  -- Removes the bottom gap
-}
+-- Load settings from settings.lua
+-- Assuming settings.lua is in the same directory as wezterm.lua
+local user_settings = require 'settings'
+for k, v in pairs(user_settings) do
+  config[k] = v
+end
 
--- Tab Bar
-config.tab_bar_at_bottom = true
-config.use_fancy_tab_bar = false
-config.tab_max_width = 32-- Reduce tab width for a more compact look
-config.show_new_tab_button_in_tab_bar = false
+-- Load keybindings from keybindings.lua
+-- Assuming keybindings.lua is in the same directory as wezterm.lua
+config.keys = require 'keybindings'
 
-config.colors = {
-    tab_bar = {
-        -- The color of the inactive tab bar edge/divider
-        inactive_tab_edge = '#575757',
-        background = '#282c34',
-    },
-}
+-- Load Neovim integration (event handlers, leader key logic)
+-- Assuming nvim_integration.lua is in the same directory
+require 'nvim_integration'
+
+-- Event Handlers and other logic:
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
 
@@ -113,27 +105,7 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
     end
 end)
 
--- Change default cursor
-config.default_cursor_style = 'BlinkingBar'
-config.cursor_blink_rate = 500
-config.cursor_thickness = 2.5
-
--- For example, changing the color scheme:
--- config.color_scheme = 'One Half Black (Gogh)'
--- config.color_scheme = 'nightfox'
--- config.color_scheme = 'Argonaut'
--- config.color_scheme = 'One Half Black (Gogh)'
--- config.color_scheme = 'Aura'
-config.color_scheme = 'MaterialOcean'
-
--- Change font size
-config.font_size = 15
-config.font = wezterm.font('CodeNewRoman Nerd Font Mono')
-
--- Enable Scroll bar
-config.enable_scroll_bar = false
-
--- Add Switching Workspaces -- 
+-- Add Switching Workspaces --
 wezterm.on('update-right-status', function(window, pane)
     window:set_right_status(window:active_workspace())
 end)
@@ -315,7 +287,7 @@ wezterm.on('gui-startup', function(cmd)
     window:gui_window():toggle_fullscreen()
 end)
 
--- -- Local server for persistent sessions
+-- -- Local server for persistent sessions (moved to settings.lua)
 -- config.unix_domains = {
 --     {
 --         name = "jakeroid",
