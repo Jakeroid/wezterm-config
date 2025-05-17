@@ -1,15 +1,5 @@
 local wezterm = require 'wezterm'
-
--- Helper function to check if a file exists
-local function file_exists(name)
-    local f = io.open(name, "r")
-    if f then
-        f:close()
-        return true
-    else
-        return false
-    end
-end
+local utils = require 'utils'
 
 -- Default leader key value
 local vim_leader_key = " "
@@ -18,7 +8,7 @@ local vim_leader_key = " "
 local leader_config_file = os.getenv("HOME") .. "/.config/nvim/lua/config/leader.lua"
 
 -- Check if the file exists and load the leader key
-if file_exists(leader_config_file) then
+if utils.file_exists(leader_config_file) then
     local ok, leader_conf = pcall(dofile, leader_config_file)
     if ok and leader_conf and leader_conf.vim_leader_key then
         vim_leader_key = leader_conf.vim_leader_key
